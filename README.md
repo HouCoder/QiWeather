@@ -8,7 +8,7 @@
 
 ```js
 export default {
-  google: 'AIzaSyDCsBoJqFB3KkwfbuuML4BF_JwcTetA_G0',
+  google: 'YOUR_KEY',
 };
 ```
 
