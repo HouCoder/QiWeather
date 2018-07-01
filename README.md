@@ -14,6 +14,4 @@ export default {
 
 ## Screenshots
 
-<a href="https://www.youtube.com/watch?v=2uzN4u_FWGA&feature=youtu.be">
-![home-screen](./screens/home-screen.png)
-</a>
+[![HomeScreen](./screens/home-screen.png)](https://www.youtube.com/watch?v=2uzN4u_FWGA)
