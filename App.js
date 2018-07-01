@@ -1,5 +1,6 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation';
+import { YellowBox } from 'react-native';
 
 import HomeScreen from './src/screens/Home';
 import AddCityScreen from './src/screens/AddCity';
@@ -13,8 +14,7 @@ const RootStack = createStackNavigator({
   initialRouteName: 'Home',
 });
 
-export default class App extends React.Component {
-  render() {
-    return <RootStack />;
-  }
-}
+// Temporary disable the warning - https://github.com/facebook/react-native/issues/18868
+YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated']);
+
+export default () => <RootStack />;
