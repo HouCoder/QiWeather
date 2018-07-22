@@ -14,7 +14,13 @@ const RootStack = createStackNavigator({
   initialRouteName: 'Home',
 });
 
-// Temporary disable the warning - https://github.com/facebook/react-native/issues/18868
-YellowBox.ignoreWarnings(['Warning: isMounted(...) is deprecated']);
+YellowBox.ignoreWarnings([
+  // https://github.com/facebook/react-native/issues/18868
+  'Warning: isMounted(...) is deprecated',
+  // https://github.com/facebook/react-native/issues/18201#issuecomment-390427365
+  'Class RCTCxxModule',
+  // https://github.com/facebook/react-native/issues/19133
+  'Module RCTImageLoader',
+]);
 
 export default () => <RootStack />;

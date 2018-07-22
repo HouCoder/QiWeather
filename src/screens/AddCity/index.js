@@ -131,7 +131,7 @@ export default class AddCityScreen extends React.Component {
       <View style={styles.container}>
         <TextInput
           style={styles.input}
-          autoFocus
+          autoFocus={true}
           placeholder={this.state.placeholder}
           onChangeText={this.handleTextChange.bind(this)}
           // https://github.com/facebook/react-native/issues/5424#issuecomment-173122119
