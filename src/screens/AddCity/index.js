@@ -1,11 +1,11 @@
 import React from 'react';
 import {
-  Text, View, TextInput, FlatList, Image,
+  Text, View, TextInput, FlatList, Image, Alert,
 } from 'react-native';
 
-// Pure npm package https://www.npmjs.com/package/query-string
 import queryString from 'query-string';
 import axios from 'axios';
+import Spinner from 'react-native-loading-spinner-overlay';
 
 import appConfig from '../../config/app';
 import credentials from '../../../.credentials';
@@ -22,44 +22,56 @@ export default class AddCityScreen extends React.Component {
     this.state = {
       placeholder: 'Please add a city',
       autocompleteSuggestions: [],
+      isSaving: false,
     };
   }
 
   saveSelected = async (selected) => {
     // Get existing saved places.
     const saved = await storage.getSelectedCities();
-    const parameters = queryString.stringify({
-      placeid: selected.place_id,
-      key: credentials.google,
-    });
-
     const isSelectedExist = saved.find(city => city.place_id === selected.place_id) !== undefined;
+
+    const { navigation } = this.props;
+
     if (isSelectedExist) {
-      // Already exist, back to previous page.
-      return this.props.navigation.navigate('Home');
+      // Already exist, go back to home page.
+      return navigation.navigate('Home');
     }
 
-    const placeDetailHtppEndpoint = `${appConfig.google.placeDetailHtppEndpoint}?${parameters}`;
+    this.setState({
+      isSaving: true,
+    });
 
     // Get selected details by placeid from Google place API.
-    return axios.get(placeDetailHtppEndpoint)
+    return axios.get(appConfig.google.placeDetailHtppEndpoint, {
+      params: {
+        placeid: selected.place_id,
+        key: credentials.google,
+      },
+    })
       .then((placeDetail) => {
-        const { location } = placeDetail.data.result.geometry;
-        const googleTimeZoneParameters = queryString.stringify({
-          location: `${location.lat},${location.lng}`,
-          timestamp: Date.now() / 1000,
-          key: credentials.google,
-        });
+        const placeDetailResponse = placeDetail.data;
 
-        const timeZoneAPI = `${appConfig.google.timeZoneAPIHttpEndpoint}?${googleTimeZoneParameters}`;
+        if (placeDetailResponse.status !== 'OK') {
+          Alert.alert('Unable to find the place detail');
+          return Promise.reject(new Error('Unable to find the detail.'));
+        }
+
+        const { location } = placeDetailResponse.result.geometry;
 
         // Get selected time zone from Google place API.
-        axios.get(timeZoneAPI)
+        axios.get(appConfig.google.timeZoneAPIHttpEndpoint, {
+          params: {
+            location: `${location.lat},${location.lng}`,
+            timestamp: Date.now() / 1000,
+            key: credentials.google,
+          }
+        })
           .then(async (response) => {
             const apiResponse = response.data;
 
             if (apiResponse.status !== 'OK') {
-              // TODO: Alert user
+              Alert.alert('Unable to find the timezone.');
               return Promise.reject(new Error('Unable to find the timezone.'));
             }
 
@@ -76,8 +88,11 @@ export default class AddCityScreen extends React.Component {
             await storage.addCity(item);
 
             // Refresh & back to previous page.
-            const { navigation } = this.props;
             navigation.getParam('refresh')();
+
+            this.setState({
+              isSaving: false,
+            });
             return navigation.navigate('Home');
           }).catch(error => console.log(error));
       }).catch(error => console.log(error));
@@ -89,24 +104,22 @@ export default class AddCityScreen extends React.Component {
       this.cancellation.cancel();
       this.cancellation = null;
     }
-
-    const parameters = queryString.stringify({
-      input: city,
-      // Look cities only
-      types: ['(cities)'],
-      language: 'en',
-      key: credentials.google,
-    });
-
-    const autocompleteHttpEndpoint = `${appConfig.google.autocompleteHttpEndpoint}?${parameters}`;
     this.cancellation = axios.CancelToken.source();
 
     // Get place suggestions from Google place autocomplete.
-    axios.get(autocompleteHttpEndpoint, { cancelToken: this.cancellation.token })
-      .then((jsonResponse) => {
-        console.log(jsonResponse.data.predictions);
+    axios.get(appConfig.google.autocompleteHttpEndpoint, {
+      params: {
+        input: city,
+        // Look for cities only
+        types: ['(cities)'],
+        language: 'en',
+        key: credentials.google,
+      },
+      cancelToken: this.cancellation.token,
+    })
+      .then((suggestionsResponse ) => {
         this.setState({
-          autocompleteSuggestions: jsonResponse.data.predictions,
+          autocompleteSuggestions: suggestionsResponse.data.predictions,
         });
       })
       .catch((error) => {
@@ -129,9 +142,10 @@ export default class AddCityScreen extends React.Component {
 
     return (
       <View style={styles.container}>
+        <Spinner visible={this.state.isSaving} textContent="Loading..." textStyle={{ color: '#FFF' }} />
         <TextInput
           style={styles.input}
-          autoFocus={true}
+          autoFocus
           placeholder={this.state.placeholder}
           onChangeText={this.handleTextChange.bind(this)}
           // https://github.com/facebook/react-native/issues/5424#issuecomment-173122119
