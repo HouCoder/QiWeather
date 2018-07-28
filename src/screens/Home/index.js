@@ -2,9 +2,9 @@ import React from 'react';
 import {
   Text, View, Button, FlatList, TouchableOpacity, ScrollView, Image,
 } from 'react-native';
-import queryString from 'query-string';
 import axios from 'axios';
 import momentTimezone from 'moment-timezone';
+import I18n from 'react-native-i18n';
 
 // https://github.com/dancormier/react-native-swipeout/issues/267
 import Swipeout from 'react-native-swipeout';
@@ -13,6 +13,8 @@ import appConfig from '../../config/app';
 import styles from './styles';
 import * as storage from '../../utilities/storage';
 import { fToC } from '../../utilities/temperature';
+
+console.log(I18n);
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -38,13 +40,12 @@ export default class HomeScreen extends React.Component {
     ].join(' ');
 
     const currentWeatherQueue = cityList.map((item) => {
-      const parameters = queryString.stringify({
-        format: 'json',
-        q: generateYql(item.full_name),
+      return axios.get(appConfig.yahoo.weatherHttpEndpoint, {
+        params: {
+          format: 'json',
+          q: generateYql(item.full_name),
+        },
       });
-      const weatherHttpEndpoint = `${appConfig.yahoo.weatherHttpEndpoint}?${parameters}`;
-
-      return axios.get(weatherHttpEndpoint);
     });
 
     axios.all(currentWeatherQueue).then(axios.spread((...response) => {
@@ -159,7 +160,7 @@ export default class HomeScreen extends React.Component {
             </View>
             )
           }
-          <Button onPress={gotoAddCityScreen} title="Add City" />
+          <Button onPress={gotoAddCityScreen} title={I18n.t('home.add_city')} />
         </ScrollView>
       </View>
     );

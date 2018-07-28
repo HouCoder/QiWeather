@@ -3,14 +3,23 @@ import {
   Text, View, TextInput, FlatList, Image, Alert,
 } from 'react-native';
 
-import queryString from 'query-string';
 import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay';
+import I18n from 'react-native-i18n';
 
 import appConfig from '../../config/app';
 import credentials from '../../../.credentials';
 import styles from './styles';
 import * as storage from '../../utilities/storage';
+
+I18n.translations = {
+  en: {
+    greeting: 'Hi!',
+  },
+  zh: {
+    greeting: '你好！',
+  },
+};
 
 export default class AddCityScreen extends React.Component {
   static navigationOptions = {
@@ -20,7 +29,7 @@ export default class AddCityScreen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      placeholder: 'Please add a city',
+      placeholder: 'Search',
       autocompleteSuggestions: [],
       isSaving: false,
     };
@@ -143,6 +152,9 @@ export default class AddCityScreen extends React.Component {
     return (
       <View style={styles.container}>
         <Spinner visible={this.state.isSaving} textContent="Loading..." textStyle={{ color: '#FFF' }} />
+        <Text>
+          {I18n.t('greeting')}
+        </Text>
         <TextInput
           style={styles.input}
           autoFocus
