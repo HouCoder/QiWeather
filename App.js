@@ -1,22 +1,10 @@
 import React from 'react';
 import { createStackNavigator } from 'react-navigation';
 import { YellowBox } from 'react-native';
-import I18n from 'react-native-i18n';
 
 import HomeScreen from './src/screens/Home';
 import AddCityScreen from './src/screens/AddCity';
 import DetailScreen from './src/screens/Detail';
-
-import { zh, en } from './src/lang';
-
-// Setup i18n support
-// React native i18n config https://github.com/AlexanderZaytsev/react-native-i18n
-I18n.fallbacks = true;
-
-I18n.translations = {
-  zh,
-  en,
-};
 
 const RootStack = createStackNavigator({
   Home: HomeScreen,

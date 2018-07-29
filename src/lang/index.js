@@ -1,5 +1,9 @@
+import I18n from 'react-native-i18n';
+
 // Load i18n files
 import home from './home';
+
+I18n.fallbacks = true;
 
 const collections = {
   ...home,
@@ -15,4 +19,9 @@ Object.entries(collections).forEach((entry) => {
   zh[key] = value[1];
 });
 
-export { zh, en };
+I18n.translations = {
+  zh,
+  en,
+};
+
+export default I18n;

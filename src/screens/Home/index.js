@@ -4,21 +4,19 @@ import {
 } from 'react-native';
 import axios from 'axios';
 import momentTimezone from 'moment-timezone';
-import I18n from 'react-native-i18n';
 
 // https://github.com/dancormier/react-native-swipeout/issues/267
 import Swipeout from 'react-native-swipeout';
 
+import I18n from '../../lang';
 import appConfig from '../../config/app';
 import styles from './styles';
 import * as storage from '../../utilities/storage';
 import { fToC } from '../../utilities/temperature';
 
-console.log(I18n);
-
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
-    title: 'Home',
+    title: I18n.t('home__name'),
   };
 
   constructor(props) {
@@ -160,7 +158,7 @@ export default class HomeScreen extends React.Component {
             </View>
             )
           }
-          <Button onPress={gotoAddCityScreen} title={I18n.t('home.add_city')} />
+          <Button onPress={gotoAddCityScreen} title={I18n.t('home__add-city')} />
         </ScrollView>
       </View>
     );
