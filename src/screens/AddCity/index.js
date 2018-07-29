@@ -6,6 +6,7 @@ import {
 import axios from 'axios';
 import Spinner from 'react-native-loading-spinner-overlay';
 
+import I18n from '../../lang';
 import appConfig from '../../config/app';
 import credentials from '../../../.credentials';
 import styles from './styles';
@@ -13,13 +14,12 @@ import * as storage from '../../utilities/storage';
 
 export default class AddCityScreen extends React.Component {
   static navigationOptions = {
-    title: 'Add City',
+    title: I18n.t('add-city__name'),
   };
 
   constructor(props) {
     super(props);
     this.state = {
-      placeholder: 'Search',
       autocompleteSuggestions: [],
       isSaving: false,
     };
@@ -116,7 +116,7 @@ export default class AddCityScreen extends React.Component {
       },
       cancelToken: this.cancellation.token,
     })
-      .then((suggestionsResponse ) => {
+      .then((suggestionsResponse) => {
         this.setState({
           autocompleteSuggestions: suggestionsResponse.data.predictions,
         });
@@ -141,11 +141,15 @@ export default class AddCityScreen extends React.Component {
 
     return (
       <View style={styles.container}>
-        <Spinner visible={this.state.isSaving} textContent="Loading..." textStyle={{ color: '#FFF' }} />
+        <Spinner
+          visible={this.state.isSaving}
+          textContent={I18n.t('add-city__loading')}
+          textStyle={{ color: '#FFF' }}
+        />
         <TextInput
           style={styles.input}
           autoFocus
-          placeholder={this.state.placeholder}
+          placeholder={I18n.t('add-city__placeholder')}
           onChangeText={this.handleTextChange.bind(this)}
           // https://github.com/facebook/react-native/issues/5424#issuecomment-173122119
           underlineColorAndroid="rgba(0,0,0,0)"

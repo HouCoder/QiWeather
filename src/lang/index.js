@@ -2,11 +2,13 @@ import I18n from 'react-native-i18n';
 
 // Load i18n files
 import home from './home';
+import addCity from './add-city';
 
 I18n.fallbacks = true;
 
 const collections = {
   ...home,
+  ...addCity,
 };
 
 const en = {};
